@@ -12,19 +12,23 @@ from flet import (
     colors,
 )
 import database
+import utils
 
 
 class LogisticApp(UserControl):
     def __init__(self):
         super().__init__()
 
-        self.db_info = database.start()
+        self.db, self.db_cursor = database.start()
 
         self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
         self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
         self.expiration_date_text_field = TextField(label='Срок годности', width=300, border_color=colors.WHITE)
 
     def build(self):
+        db_response = database.upload(self.db_cursor, 'all')
+        years, equipment_records = utils.parse_db_response(db_response)
+
         input_container = Container(
             content=Row(
                 controls=[
@@ -53,7 +57,12 @@ class LogisticApp(UserControl):
 
         expiration_year += int(self.expiration_date_text_field.value)
 
-        database.add(*self.db_info, self.name_text_field.value, expiration_day, expiration_month, expiration_year)
+        database.add(self.db,
+                     self.db_cursor,
+                     self.name_text_field.value,
+                     expiration_day,
+                     expiration_month,
+                     expiration_year)
 
         self.name_text_field.value = ''
         self.manufacture_date_text_field.value = ''

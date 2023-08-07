@@ -1,8 +1,7 @@
 import sqlite3
-from typing import Tuple
 
 
-def start() -> Tuple:
+def start() -> tuple:
     db = sqlite3.connect('database.db', check_same_thread=False)
     db_cursor = db.cursor()
 
@@ -31,3 +30,9 @@ def add(db: sqlite3.Connection,
                       f'{expiration_year})')
 
     db.commit()
+
+
+def upload(db_cursor: sqlite3.Cursor, parameter: str) -> list[tuple]:
+    if parameter == 'all':
+        db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, expiration_month, expiration_day')
+        return db_cursor.fetchall()
