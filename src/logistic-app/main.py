@@ -8,6 +8,9 @@ from flet import (
     Column,
     Row,
     IconButton,
+    Dropdown,
+    alignment,
+    dropdown,
     icons,
     colors,
 )
@@ -21,14 +24,18 @@ class LogisticApp(UserControl):
 
         self.db, self.db_cursor = database.start()
 
+        db_response = database.upload(self.db_cursor, 'all')
+        years, equipment_records = utils.parse_db_response(db_response)
+
+        years.append('Ближайшее')
+
+        self.year_dropdown_options = [dropdown.Option(str(year)) for year in years]
+
         self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
         self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
         self.expiration_date_text_field = TextField(label='Срок годности', width=300, border_color=colors.WHITE)
 
     def build(self):
-        db_response = database.upload(self.db_cursor, 'all')
-        years, equipment_records = utils.parse_db_response(db_response)
-
         input_container = Container(
             content=Row(
                 controls=[
@@ -45,9 +52,30 @@ class LogisticApp(UserControl):
             width=1200,
         )
 
+        output_container = Container(
+            content=Row(
+                controls=[
+                    Dropdown(
+                        width=300,
+                        options=self.year_dropdown_options,
+                        border_color=colors.WHITE,
+                        value='Ближайшее'
+                    ),
+                ],
+            ),
+            alignment=alignment.top_center,
+            bgcolor='#61677A',
+            border_radius=10,
+            padding=30,
+            margin=10,
+            width=1200,
+            height=590,
+        )
+
         return Column(
             controls=[
                 input_container,
+                output_container,
             ],
         )
 
