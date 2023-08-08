@@ -9,6 +9,12 @@ from flet import (
     Row,
     IconButton,
     Dropdown,
+    DataTable,
+    DataRow,
+    DataColumn,
+    DataCell,
+    Text,
+    ListView,
     alignment,
     dropdown,
     icons,
@@ -31,6 +37,20 @@ class LogisticApp(UserControl):
 
         self.year_dropdown_options = [dropdown.Option(str(year)) for year in years]
 
+        self.equipment_datatable_rows = []
+
+        for i in range(len(equipment_records)):
+            name, expiration_date = equipment_records[i]
+
+            self.equipment_datatable_rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(name)),
+                        DataCell(Text(expiration_date)),
+                    ],
+                ),
+            )
+
         self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
         self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
         self.expiration_date_text_field = TextField(label='Срок годности', width=300, border_color=colors.WHITE)
@@ -52,6 +72,18 @@ class LogisticApp(UserControl):
             width=1200,
         )
 
+        list_view = ListView(expand=1, spacing=10, padding=20)
+
+        list_view.controls.append(
+            DataTable(
+                columns=[
+                    DataColumn(Text("Наименование")),
+                    DataColumn(Text("Годен до")),
+                ],
+                rows=self.equipment_datatable_rows,
+            ),
+        )
+
         output_container = Container(
             content=Row(
                 controls=[
@@ -61,6 +93,7 @@ class LogisticApp(UserControl):
                         border_color=colors.WHITE,
                         value='Ближайшее'
                     ),
+                    list_view,
                 ],
             ),
             alignment=alignment.top_center,
@@ -104,7 +137,7 @@ def main(page: Page):
     page.horizontal_alignment = CrossAxisAlignment.CENTER
     page.bgcolor = '#D8D9DA'
     page.window_width = 1300
-    page.window_height = 800
+    page.window_height = 810
     page.update()
 
     app = LogisticApp()
