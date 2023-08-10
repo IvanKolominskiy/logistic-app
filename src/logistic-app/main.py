@@ -37,19 +37,8 @@ class LogisticApp(UserControl):
 
         self.year_dropdown_options = [dropdown.Option(str(year)) for year in years]
 
-        self.equipment_datatable_rows = []
-
-        for i in range(len(equipment_records)):
-            name, expiration_date = equipment_records[i]
-
-            self.equipment_datatable_rows.append(
-                DataRow(
-                    cells=[
-                        DataCell(Text(name)),
-                        DataCell(Text(expiration_date)),
-                    ],
-                ),
-            )
+        self.equipment_datatable_rows = [DataRow(cells=[DataCell(Text(name)), DataCell(Text(expiration_date))])
+                                         for name, expiration_date in equipment_records]
 
         self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
         self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
