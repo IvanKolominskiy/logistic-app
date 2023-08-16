@@ -107,6 +107,12 @@ class LogisticApp(UserControl):
 
         self.update()
 
+        if self.dropdown.value == 'Все' or self.dropdown.value == str(expiration_year):
+            self.fill_datatable(UserControl)
+
+        if expiration_year not in self.dropdown.options:
+            self.fill_dropdown(UserControl)
+
     def fill_datatable(self, e):
         db_response = database.upload(self.db_cursor, self.dropdown.value)
         _, equipment_records = utils.parse_db_response(db_response)
