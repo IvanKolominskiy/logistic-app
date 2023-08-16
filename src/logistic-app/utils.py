@@ -8,5 +8,7 @@ def parse_db_response(db_response: list) -> tuple:
         years.append(expiration_year)
         equipment_record.append((name, f'{expiration_day}.{expiration_month}.{expiration_year}'))
 
-    return list(dict.fromkeys(years)), equipment_record
+    years = list(dict.fromkeys(years))
+    years.append('Все')
 
+    return years, equipment_record

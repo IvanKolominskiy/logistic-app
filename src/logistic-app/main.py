@@ -25,26 +25,13 @@ import utils
 
 
 class LogisticApp(UserControl):
-    def __init__(self):
-        super().__init__()
-
+    def build(self):
         self.db, self.db_cursor = database.start()
-
-        db_response = database.upload(self.db_cursor, 'all')
-        years, equipment_records = utils.parse_db_response(db_response)
-
-        years.append('Ближайшее')
-
-        self.year_dropdown_options = [dropdown.Option(str(year)) for year in years]
-
-        self.equipment_datatable_rows = [DataRow(cells=[DataCell(Text(name)), DataCell(Text(expiration_date))])
-                                         for name, expiration_date in equipment_records]
 
         self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
         self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
         self.expiration_date_text_field = TextField(label='Срок годности', width=300, border_color=colors.WHITE)
 
-    def build(self):
         input_container = Container(
             content=Row(
                 controls=[
@@ -61,27 +48,26 @@ class LogisticApp(UserControl):
             width=1200,
         )
 
-        list_view = ListView(expand=1, spacing=10, padding=20)
-
-        list_view.controls.append(
-            DataTable(
-                columns=[
-                    DataColumn(Text("Наименование")),
-                    DataColumn(Text("Годен до")),
-                ],
-                rows=self.equipment_datatable_rows,
-            ),
+        self.dropdown = Dropdown(
+            width=300,
+            border_color=colors.WHITE,
+            value='Все',
+            on_change=self.fill_datatable,
         )
+
+        self.datatable = DataTable(
+            columns=[
+                DataColumn(Text("Наименование")),
+                DataColumn(Text("Годен до")),
+            ],
+        )
+
+        list_view = ListView(expand=1, spacing=10, padding=20, controls=[self.datatable])
 
         output_container = Container(
             content=Row(
                 controls=[
-                    Dropdown(
-                        width=300,
-                        options=self.year_dropdown_options,
-                        border_color=colors.WHITE,
-                        value='Ближайшее'
-                    ),
+                    self.dropdown,
                     list_view,
                 ],
             ),
@@ -101,6 +87,10 @@ class LogisticApp(UserControl):
             ],
         )
 
+    def did_mount(self):
+        self.fill_datatable(UserControl)
+        self.fill_dropdown(UserControl)
+
     def add_equipment(self, e):
         expiration_day, expiration_month, expiration_year = tuple(
             map(int, self.manufacture_date_text_field.value.split('.')))
@@ -117,6 +107,23 @@ class LogisticApp(UserControl):
         self.name_text_field.value = ''
         self.manufacture_date_text_field.value = ''
         self.expiration_date_text_field.value = ''
+
+        self.update()
+
+    def fill_datatable(self, e):
+        db_response = database.upload(self.db_cursor, self.dropdown.value)
+        _, equipment_records = utils.parse_db_response(db_response)
+
+        self.datatable.rows = [DataRow(cells=[DataCell(Text(name)), DataCell(Text(expiration_date))])
+                               for name, expiration_date in equipment_records]
+
+        self.update()
+
+    def fill_dropdown(self, e):
+        db_response = database.upload(self.db_cursor, 'Все')
+        years, _ = utils.parse_db_response(db_response)
+
+        self.dropdown.options = [dropdown.Option(str(year)) for year in years]
 
         self.update()
 

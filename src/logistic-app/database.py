@@ -32,7 +32,15 @@ def add(db: sqlite3.Connection,
     db.commit()
 
 
-def upload(db_cursor: sqlite3.Cursor, parameter: str) -> list[tuple]:
-    if parameter == 'all':
+def upload(db_cursor: sqlite3.Cursor, *parameters) -> list[tuple]:
+    if parameters[0] == 'Все':
         db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, expiration_month, expiration_day')
         return db_cursor.fetchall()
+
+    expiration_year = parameters[0]
+
+    db_cursor.execute(f'SELECT * FROM equipment\n'
+                      f'WHERE expiration_year = {expiration_year}\n'
+                      f'ORDER BY expiration_year, expiration_month, expiration_day')
+
+    return db_cursor.fetchall()
