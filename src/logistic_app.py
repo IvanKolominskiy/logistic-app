@@ -55,6 +55,8 @@ class LogisticApp(UserControl):
         self.datatable = DataTable(
             columns=[
                 DataColumn(Text("Наименование")),
+                DataColumn(Text('Дата производства')),
+                DataColumn(Text('Срок годности')),
                 DataColumn(Text("Годен до")),
             ],
         )
@@ -89,16 +91,20 @@ class LogisticApp(UserControl):
         self.fill_dropdown(UserControl)
 
     def add_equipment(self, e):
-        expiration_day, expiration_month, expiration_year = tuple(
+        manufacture_day, manufacture_month, manufacture_year = tuple(
             map(int, self.manufacture_date_text_field.value.split('.')))
 
-        expiration_year += int(self.expiration_date_text_field.value)
+        expiration_date = int(self.expiration_date_text_field.value)
+
+        expiration_year = manufacture_year + expiration_date
 
         database.add(self.db,
                      self.db_cursor,
                      self.name_text_field.value,
-                     expiration_day,
-                     expiration_month,
+                     manufacture_day,
+                     manufacture_month,
+                     manufacture_year,
+                     expiration_date,
                      expiration_year)
 
         self.name_text_field.value = ''
@@ -117,8 +123,11 @@ class LogisticApp(UserControl):
         db_response = database.upload(self.db_cursor, self.dropdown.value)
         _, equipment_records = utils.parse_db_response(db_response)
 
-        self.datatable.rows = [DataRow(cells=[DataCell(Text(name)), DataCell(Text(expiration_date))])
-                               for name, expiration_date in equipment_records]
+        self.datatable.rows = [DataRow(cells=[DataCell(Text(name)),
+                                              DataCell(Text(manufacture_date)),
+                                              DataCell(Text(expiration_date)),
+                                              DataCell(Text(expiry_date))])
+                               for name, manufacture_date, expiration_date, expiry_date in equipment_records]
 
         self.update()
 

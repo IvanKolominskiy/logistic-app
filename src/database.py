@@ -7,9 +7,11 @@ def start() -> tuple:
 
     db_cursor.execute("""CREATE TABLE IF NOT EXISTS equipment (
         name Text,
-        expiration_day INTEGER,
-        expiration_month INTEGER,
-        expiration_year INTEGER    
+        manufacture_day INTEGER,
+        manufacture_month INTEGER,
+        manufacture_year INTEGER,
+        expiration_date INTEGER,
+        expiration_year INTEGER
     )""")
 
     db.commit()
@@ -20,13 +22,17 @@ def start() -> tuple:
 def add(db: sqlite3.Connection,
         db_cursor: sqlite3.Cursor,
         name: str,
-        expiration_day: int,
-        expiration_month: int,
+        manufacture_day: int,
+        manufacture_month: int,
+        manufacture_year: int,
+        expiration_date: int,
         expiration_year: int) -> None:
     db_cursor.execute(f'INSERT INTO equipment VALUES ('
                       f'"{name}", '
-                      f'{expiration_day}, '
-                      f'{expiration_month}, '
+                      f'{manufacture_day}, '
+                      f'{manufacture_month}, '
+                      f'{manufacture_year}, '
+                      f'{expiration_date}, '
                       f'{expiration_year})')
 
     db.commit()
@@ -34,13 +40,13 @@ def add(db: sqlite3.Connection,
 
 def upload(db_cursor: sqlite3.Cursor, *parameters) -> list[tuple]:
     if parameters[0] == 'Все':
-        db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, expiration_month, expiration_day')
+        db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, manufacture_month, manufacture_day')
         return db_cursor.fetchall()
 
     expiration_year = parameters[0]
 
     db_cursor.execute(f'SELECT * FROM equipment\n'
                       f'WHERE expiration_year = {expiration_year}\n'
-                      f'ORDER BY expiration_year, expiration_month, expiration_day')
+                      f'ORDER BY expiration_year, manufacture_month, manufacture_day')
 
     return db_cursor.fetchall()
