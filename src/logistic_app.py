@@ -129,7 +129,7 @@ class LogisticApp(UserControl):
                                               DataCell(Text(expiration_date)),
                                               DataCell(Text(expiry_date)),
                                               DataCell(
-                                                  IconButton(icon=icons.DELETE, data=name, on_click=self.det)
+                                                  IconButton(icon=icons.DELETE, data=name, on_click=self.delete_record)
                                               )])
                                for name, manufacture_date, expiration_date, expiry_date in equipment_records]
 
@@ -143,7 +143,7 @@ class LogisticApp(UserControl):
 
         self.update()
 
-    def det(self, e):
+    def delete_record(self, e):
         database.delete(self.db, self.db_cursor, e.control.data)
 
         self.fill_datatable(UserControl)
