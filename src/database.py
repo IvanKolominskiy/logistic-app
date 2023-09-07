@@ -6,7 +6,7 @@ def start() -> tuple:
     db_cursor = db.cursor()
 
     db_cursor.execute("""CREATE TABLE IF NOT EXISTS equipment (
-        name Text,
+        name Text UNIQUE,
         manufacture_day INTEGER,
         manufacture_month INTEGER,
         manufacture_year INTEGER,
@@ -50,3 +50,12 @@ def upload(db_cursor: sqlite3.Cursor, *parameters) -> list[tuple]:
                       f'ORDER BY expiration_year, manufacture_month, manufacture_day')
 
     return db_cursor.fetchall()
+
+
+def delete(db: sqlite3.Connection, db_cursor: sqlite3.Cursor, equipment_name: str) -> None:
+    db_cursor.execute(f'DELETE FROM equipment\n'
+                      f'WHERE name = "{equipment_name}"')
+
+    db.commit()
+
+

@@ -58,6 +58,7 @@ class LogisticApp(UserControl):
                 DataColumn(Text('Дата производства')),
                 DataColumn(Text('Срок годности')),
                 DataColumn(Text("Годен до")),
+                DataColumn(Text(''))
             ],
         )
 
@@ -126,7 +127,10 @@ class LogisticApp(UserControl):
         self.datatable.rows = [DataRow(cells=[DataCell(Text(name)),
                                               DataCell(Text(manufacture_date)),
                                               DataCell(Text(expiration_date)),
-                                              DataCell(Text(expiry_date))])
+                                              DataCell(Text(expiry_date)),
+                                              DataCell(
+                                                  IconButton(icon=icons.DELETE, data=name, on_click=self.det)
+                                              )])
                                for name, manufacture_date, expiration_date, expiry_date in equipment_records]
 
         self.update()
@@ -136,5 +140,13 @@ class LogisticApp(UserControl):
         years, _ = utils.parse_db_response(db_response)
 
         self.dropdown.options = [dropdown.Option(str(year)) for year in years]
+
+        self.update()
+
+    def det(self, e):
+        database.delete(self.db, self.db_cursor, e.control.data)
+
+        self.fill_datatable(UserControl)
+        self.fill_dropdown(UserControl)
 
         self.update()
