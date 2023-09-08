@@ -6,7 +6,8 @@ def start() -> tuple:
     db_cursor = db.cursor()
 
     db_cursor.execute("""CREATE TABLE IF NOT EXISTS equipment (
-        name Text UNIQUE,
+        id INTEGER PRIMARY KEY,
+        name Text,
         manufacture_day INTEGER,
         manufacture_month INTEGER,
         manufacture_year INTEGER,
@@ -27,7 +28,9 @@ def add(db: sqlite3.Connection,
         manufacture_year: int,
         expiration_date: int,
         expiration_year: int) -> None:
-    db_cursor.execute(f'INSERT INTO equipment VALUES ('
+    db_cursor.execute(f'INSERT INTO equipment '
+                      f'(name, manufacture_day, manufacture_month, manufacture_year, expiration_date, expiration_year) '
+                      f'VALUES ('
                       f'"{name}", '
                       f'{manufacture_day}, '
                       f'{manufacture_month}, '

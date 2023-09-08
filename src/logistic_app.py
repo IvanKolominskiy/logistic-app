@@ -131,7 +131,7 @@ class LogisticApp(UserControl):
                                               DataCell(
                                                   IconButton(icon=icons.DELETE, data=name, on_click=self.delete_record)
                                               )])
-                               for name, manufacture_date, expiration_date, expiry_date in equipment_records]
+                               for record_id, name, manufacture_date, expiration_date, expiry_date in equipment_records]
 
         self.update()
 

@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 DB_Record = namedtuple('DB_Record', [
+    'record_id',
     'name',
     'manufacture_day',
     'manufacture_month',
@@ -27,7 +28,8 @@ def parse_db_response(db_response: list) -> tuple:
                        f'{parsed_record.manufacture_month}.'
                        f'{parsed_record.expiration_year}')
 
-        equipment_records.append((parsed_record.name,
+        equipment_records.append((parsed_record.record_id,
+                                  parsed_record.name,
                                   manufacture_date,
                                   parsed_record.expiration_date,
                                   expiry_date))
