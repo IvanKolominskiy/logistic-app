@@ -62,3 +62,29 @@ def delete(db: sqlite3.Connection, db_cursor: sqlite3.Cursor, equipment_name: st
     db.commit()
 
 
+def update(db: sqlite3.Connection,
+           db_cursor: sqlite3.Cursor,
+           column: str,
+           record_id: int,
+           new_value: int | str) -> None:
+    match column:
+        case 'name':
+            db_cursor.execute(f'UPDATE equipment\n'
+                              f'SET {column} = "{new_value}"\n'
+                              f'WHERE id = {record_id}')
+        case 'manufacture_date':
+            manufacture_day, manufacture_month, manufacture_year = new_value.split('.')
+
+            db_cursor.execute(f'UPDATE equipment\n'
+                              f'SET manufacture_day = {manufacture_day},\n'
+                              f'    manufacture_month = {manufacture_month},\n'
+                              f'    manufacture_year = {manufacture_year},\n'
+                              f'    expiration_year = {manufacture_year} + expiration_date\n'
+                              f'WHERE id = {record_id}')
+        case 'expiration_date':
+            db_cursor.execute(f'UPDATE equipment\n'
+                              f'SET {column} = {new_value},\n'
+                              f'    expiration_year = manufacture_year + {new_value}\n'
+                              f'WHERE id = {record_id}')
+
+    db.commit()

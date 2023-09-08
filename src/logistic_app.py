@@ -2,6 +2,7 @@ from flet import (
     UserControl,
     Container,
     TextField,
+    TextStyle,
     Column,
     Row,
     IconButton,
@@ -46,7 +47,7 @@ class LogisticApp(UserControl):
         )
 
         self.dropdown = Dropdown(
-            width=300,
+            width=200,
             border_color=colors.WHITE,
             value='Все',
             on_change=self.fill_datatable,
@@ -60,6 +61,7 @@ class LogisticApp(UserControl):
                 DataColumn(Text("Годен до")),
                 DataColumn(Text(''))
             ],
+            data_text_style=TextStyle(size=16)
         )
 
         list_view = ListView(expand=1, spacing=10, padding=20, controls=[self.datatable])
@@ -124,12 +126,20 @@ class LogisticApp(UserControl):
         db_response = database.upload(self.db_cursor, self.dropdown.value)
         _, equipment_records = utils.parse_db_response(db_response)
 
-        self.datatable.rows = [DataRow(cells=[DataCell(Text(name)),
-                                              DataCell(Text(manufacture_date)),
-                                              DataCell(Text(expiration_date)),
+        self.datatable.rows = [DataRow(cells=[DataCell(Text(name),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('name', record_id)),
+                                              DataCell(Text(manufacture_date),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('manufacture_date', record_id)),
+                                              DataCell(Text(expiration_date),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('expiration_date', record_id)),
                                               DataCell(Text(expiry_date)),
                                               DataCell(
-                                                  IconButton(icon=icons.DELETE, data=name, on_click=self.delete_record)
+                                                  IconButton(icon=icons.DELETE,
+                                                             data=name,
+                                                             on_click=self.delete_record)
                                               )])
                                for record_id, name, manufacture_date, expiration_date, expiry_date in equipment_records]
 
@@ -145,6 +155,19 @@ class LogisticApp(UserControl):
 
     def delete_record(self, e):
         database.delete(self.db, self.db_cursor, e.control.data)
+
+        self.fill_datatable(UserControl)
+        self.fill_dropdown(UserControl)
+
+        self.update()
+
+    def show_edit_display(self, e):
+        e.control.content = TextField(bgcolor='#61677A', dense=True, on_submit=self.edit_record, data=e.control.data)
+
+        self.update()
+
+    def edit_record(self, e):
+        database.update(self.db, self.db_cursor, *e.control.data, e.control.value)
 
         self.fill_datatable(UserControl)
         self.fill_dropdown(UserControl)
