@@ -2,7 +2,7 @@ import sqlite3
 
 
 def start() -> tuple:
-    db = sqlite3.connect('database.db', check_same_thread=False)
+    db = sqlite3.connect('../data/database.db', check_same_thread=False)
     db_cursor = db.cursor()
 
     db_cursor.execute("""CREATE TABLE IF NOT EXISTS equipment (
