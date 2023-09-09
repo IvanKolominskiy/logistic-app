@@ -42,7 +42,7 @@ def add(db: sqlite3.Connection,
 
 
 def upload(db_cursor: sqlite3.Cursor, category: int | str) -> list[tuple]:
-    if category == 'Все':
+    if category == 'Ближайшее':
         db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, manufacture_month, manufacture_day')
         return db_cursor.fetchall()
 

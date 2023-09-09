@@ -49,7 +49,7 @@ class LogisticApp(UserControl):
         self.dropdown = Dropdown(
             width=200,
             border_color=colors.WHITE,
-            value='Все',
+            value='Ближайшее',
             on_change=self.fill_datatable,
         )
 
@@ -113,7 +113,7 @@ class LogisticApp(UserControl):
         self.update()
 
     def fill_dropdown(self, e):
-        db_response = database.upload(self.db_cursor, 'Все')
+        db_response = database.upload(self.db_cursor, 'Ближайшее')
         categories, _ = utils.parse_db_response(db_response)
 
         self.dropdown.options = [dropdown.Option(str(category)) for category in categories]
@@ -143,7 +143,7 @@ class LogisticApp(UserControl):
 
         self.update()
 
-        if self.dropdown.value == 'Все' or self.dropdown.value == str(expiration_year):
+        if self.dropdown.value == 'Ближайшее' or self.dropdown.value == str(expiration_year):
             self.fill_datatable(UserControl)
 
         if expiration_year not in self.dropdown.options:

@@ -35,6 +35,6 @@ def parse_db_response(db_response: list) -> tuple:
                                   expiry_date))
 
     categories = list(dict.fromkeys(categories))
-    categories.append('Все')
+    categories.append('Ближайшее')
 
     return categories, equipment_records
