@@ -36,7 +36,7 @@ class LogisticApp(UserControl):
                     self.name_text_field,
                     self.manufacture_date_text_field,
                     self.expiration_date_text_field,
-                    IconButton(icon=icons.ADD_BOX, width=100, bgcolor='#61677A', on_click=self.add_equipment),
+                    IconButton(icon=icons.ADD_BOX, width=100, bgcolor='#61677A', on_click=self.add_record),
                 ],
             ),
             bgcolor='#000000',
@@ -89,11 +89,38 @@ class LogisticApp(UserControl):
             ],
         )
 
-    def did_mount(self):
-        self.fill_datatable(UserControl)
-        self.fill_dropdown(UserControl)
+    def fill_datatable(self, e):
+        db_response = database.upload(self.db_cursor, self.dropdown.value)
+        _, equipment_records = utils.parse_db_response(db_response)
 
-    def add_equipment(self, e):
+        self.datatable.rows = [DataRow(cells=[DataCell(Text(name),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('name', record_id)),
+                                              DataCell(Text(manufacture_date),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('manufacture_date', record_id)),
+                                              DataCell(Text(expiration_date),
+                                                       on_double_tap=self.show_edit_display,
+                                                       data=('expiration_date', record_id)),
+                                              DataCell(Text(expiry_date)),
+                                              DataCell(
+                                                  IconButton(icon=icons.DELETE,
+                                                             data=name,
+                                                             on_click=self.delete_record)
+                                              )])
+                               for record_id, name, manufacture_date, expiration_date, expiry_date in equipment_records]
+
+        self.update()
+
+    def fill_dropdown(self, e):
+        db_response = database.upload(self.db_cursor, 'Все')
+        categories, _ = utils.parse_db_response(db_response)
+
+        self.dropdown.options = [dropdown.Option(str(category)) for category in categories]
+
+        self.update()
+
+    def add_record(self, e):
         manufacture_day, manufacture_month, manufacture_year = tuple(
             map(int, self.manufacture_date_text_field.value.split('.')))
 
@@ -122,47 +149,11 @@ class LogisticApp(UserControl):
         if expiration_year not in self.dropdown.options:
             self.fill_dropdown(UserControl)
 
-    def fill_datatable(self, e):
-        db_response = database.upload(self.db_cursor, self.dropdown.value)
-        _, equipment_records = utils.parse_db_response(db_response)
-
-        self.datatable.rows = [DataRow(cells=[DataCell(Text(name),
-                                                       on_double_tap=self.show_edit_display,
-                                                       data=('name', record_id)),
-                                              DataCell(Text(manufacture_date),
-                                                       on_double_tap=self.show_edit_display,
-                                                       data=('manufacture_date', record_id)),
-                                              DataCell(Text(expiration_date),
-                                                       on_double_tap=self.show_edit_display,
-                                                       data=('expiration_date', record_id)),
-                                              DataCell(Text(expiry_date)),
-                                              DataCell(
-                                                  IconButton(icon=icons.DELETE,
-                                                             data=name,
-                                                             on_click=self.delete_record)
-                                              )])
-                               for record_id, name, manufacture_date, expiration_date, expiry_date in equipment_records]
-
-        self.update()
-
-    def fill_dropdown(self, e):
-        db_response = database.upload(self.db_cursor, 'Все')
-        years, _ = utils.parse_db_response(db_response)
-
-        self.dropdown.options = [dropdown.Option(str(year)) for year in years]
-
-        self.update()
-
     def delete_record(self, e):
         database.delete(self.db, self.db_cursor, e.control.data)
 
         self.fill_datatable(UserControl)
         self.fill_dropdown(UserControl)
-
-        self.update()
-
-    def show_edit_display(self, e):
-        e.control.content = TextField(bgcolor='#61677A', dense=True, on_submit=self.edit_record, data=e.control.data)
 
         self.update()
 
@@ -173,3 +164,13 @@ class LogisticApp(UserControl):
         self.fill_dropdown(UserControl)
 
         self.update()
+
+    def show_edit_display(self, e):
+        e.control.content = TextField(bgcolor='#61677A', dense=True, on_submit=self.edit_record,
+                                      data=e.control.data)
+
+        self.update()
+
+    def did_mount(self):
+        self.fill_datatable(UserControl)
+        self.fill_dropdown(UserControl)

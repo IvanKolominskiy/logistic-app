@@ -12,13 +12,13 @@ DB_Record = namedtuple('DB_Record', [
 
 
 def parse_db_response(db_response: list) -> tuple:
-    years = []
+    categories = []
     equipment_records = []
 
     for record in db_response:
         parsed_record = DB_Record._make(record)
 
-        years.append(parsed_record.expiration_year)
+        categories.append(parsed_record.expiration_year)
 
         manufacture_date = (f'{parsed_record.manufacture_day}.'
                             f'{parsed_record.manufacture_month}.'
@@ -34,7 +34,7 @@ def parse_db_response(db_response: list) -> tuple:
                                   parsed_record.expiration_date,
                                   expiry_date))
 
-    years = list(dict.fromkeys(years))
-    years.append('Все')
+    categories = list(dict.fromkeys(categories))
+    categories.append('Все')
 
-    return years, equipment_records
+    return categories, equipment_records
