@@ -1,3 +1,4 @@
+import flet
 from flet import (
     UserControl,
     Container,
@@ -26,9 +27,15 @@ class LogisticApp(UserControl):
     def build(self):
         self.db, self.db_cursor = database.start()
 
-        self.name_text_field = TextField(label='Наименование', width=400, border_color=colors.WHITE)
-        self.manufacture_date_text_field = TextField(label='Дата изготовления', width=300, border_color=colors.WHITE)
-        self.expiration_date_text_field = TextField(label='Срок годности', width=300, border_color=colors.WHITE)
+        self.name_text_field = TextField(label='Наименование',
+                                         width=400,
+                                         border_color=colors.WHITE)
+        self.manufacture_date_text_field = TextField(label='Дата изготовления (ДД.ММ.ГГГГ)',
+                                                     width=300,
+                                                     border_color=colors.WHITE)
+        self.expiration_date_text_field = TextField(label='Срок годности',
+                                                    width=300,
+                                                    border_color=colors.WHITE)
 
         input_container = Container(
             content=Row(
