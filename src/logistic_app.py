@@ -13,17 +13,19 @@ from flet import (
     DataCell,
     Text,
     ListView,
+    ControlEvent,
     alignment,
     dropdown,
     icons,
     colors,
 )
+from typing import Type
 import database
 import utils
 
 
 class LogisticApp(UserControl):
-    def build(self):
+    def build(self) -> Column:
         self.db, self.db_cursor = database.start()
 
         self.name_text_field = TextField(label='Наименование',
@@ -95,7 +97,7 @@ class LogisticApp(UserControl):
             ],
         )
 
-    def fill_datatable(self, e):
+    def fill_datatable(self, e: Type[UserControl]) -> None:
         db_response = database.upload(self.db_cursor, self.dropdown.value)
         _, equipment_records = utils.parse_db_response(db_response)
 
@@ -118,7 +120,7 @@ class LogisticApp(UserControl):
 
         self.update()
 
-    def fill_dropdown(self, e):
+    def fill_dropdown(self, e: Type[UserControl]) -> None:
         db_response = database.upload(self.db_cursor, 'Ближайшее')
         categories, _ = utils.parse_db_response(db_response)
 
@@ -126,7 +128,7 @@ class LogisticApp(UserControl):
 
         self.update()
 
-    def add_record(self, e):
+    def add_record(self, e: ControlEvent) -> None:
         manufacture_day, manufacture_month, manufacture_year = tuple(
             map(int, self.manufacture_date_text_field.value.split('.')))
 
@@ -155,7 +157,7 @@ class LogisticApp(UserControl):
         if expiration_year not in self.dropdown.options:
             self.fill_dropdown(UserControl)
 
-    def delete_record(self, e):
+    def delete_record(self, e: ControlEvent) -> None:
         database.delete(self.db, self.db_cursor, e.control.data)
 
         self.fill_datatable(UserControl)
@@ -163,7 +165,7 @@ class LogisticApp(UserControl):
 
         self.update()
 
-    def edit_record(self, e):
+    def edit_record(self, e: ControlEvent) -> None:
         database.update(self.db, self.db_cursor, *e.control.data, e.control.value)
 
         self.fill_datatable(UserControl)
@@ -171,12 +173,12 @@ class LogisticApp(UserControl):
 
         self.update()
 
-    def show_edit_display(self, e):
+    def show_edit_display(self, e: ControlEvent) -> None:
         e.control.content = TextField(bgcolor='#61677A', dense=True, on_submit=self.edit_record,
                                       data=e.control.data)
 
         self.update()
 
-    def did_mount(self):
+    def did_mount(self) -> None:
         self.fill_datatable(UserControl)
         self.fill_dropdown(UserControl)

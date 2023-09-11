@@ -6,7 +6,7 @@ from flet import (
 from logistic_app import LogisticApp
 
 
-def main(page: Page):
+def main(page: Page) -> None:
     page.title = 'Logistic App'
     page.horizontal_alignment = CrossAxisAlignment.CENTER
     page.bgcolor = '#D8D9DA'
