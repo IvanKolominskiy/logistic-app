@@ -1,7 +1,8 @@
 import sqlite3
+from typing import List, Tuple
 
 
-def start() -> tuple:
+def start() -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
     db = sqlite3.connect('../data/database.db', check_same_thread=False)
     db_cursor = db.cursor()
 
@@ -41,7 +42,7 @@ def add(db: sqlite3.Connection,
     db.commit()
 
 
-def upload(db_cursor: sqlite3.Cursor, category: int | str) -> list[tuple]:
+def upload(db_cursor: sqlite3.Cursor, category: int | str) -> List[Tuple]:
     if category == 'Ближайшее':
         db_cursor.execute('SELECT * FROM equipment ORDER BY expiration_year, manufacture_month, manufacture_day')
         return db_cursor.fetchall()

@@ -1,4 +1,3 @@
-import flet
 from flet import (
     UserControl,
     Container,

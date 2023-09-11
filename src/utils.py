@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import List, Tuple
 
 DB_Record = namedtuple('DB_Record', [
     'record_id',
@@ -11,7 +12,7 @@ DB_Record = namedtuple('DB_Record', [
 ])
 
 
-def parse_db_response(db_response: list) -> tuple:
+def parse_db_response(db_response: List[Tuple]) -> Tuple[List, List]:
     categories = []
     equipment_records = []
 
