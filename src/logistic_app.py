@@ -21,7 +21,7 @@ from flet import (
 )
 from typing import Type
 import database
-import utils
+import parser
 
 
 class LogisticApp(UserControl):
@@ -99,7 +99,7 @@ class LogisticApp(UserControl):
 
     def fill_datatable(self, e: Type[UserControl]) -> None:
         db_response = database.upload(self.db_cursor, self.dropdown.value)
-        _, equipment_records = utils.parse_db_response(db_response)
+        _, equipment_records = parser.parse_db_response(db_response)
 
         self.datatable.rows = [DataRow(cells=[DataCell(Text(name),
                                                        on_double_tap=self.show_edit_display,
@@ -122,7 +122,7 @@ class LogisticApp(UserControl):
 
     def fill_dropdown(self, e: Type[UserControl]) -> None:
         db_response = database.upload(self.db_cursor, 'Ближайшее')
-        categories, _ = utils.parse_db_response(db_response)
+        categories, _ = parser.parse_db_response(db_response)
 
         self.dropdown.options = [dropdown.Option(str(category)) for category in categories]
 
