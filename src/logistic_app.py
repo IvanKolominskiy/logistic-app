@@ -14,12 +14,14 @@ from flet import (
     Text,
     ListView,
     ControlEvent,
+    AlertDialog,
     alignment,
     dropdown,
     icons,
     colors,
 )
-from typing import Type
+from typing import Type, List
+from validation import validate_manufacture_date, validate_expiration_date
 import database
 import parser
 
@@ -90,10 +92,13 @@ class LogisticApp(UserControl):
             height=590,
         )
 
+        self.input_errors_dialog = AlertDialog()
+
         return Column(
             controls=[
                 input_container,
                 output_container,
+                self.input_errors_dialog,
             ],
         )
 
@@ -129,6 +134,20 @@ class LogisticApp(UserControl):
         self.update()
 
     def add_record(self, e: ControlEvent) -> None:
+        errors = []
+
+        validation_manufacture_date_error = validate_manufacture_date(self.manufacture_date_text_field.value)
+        if validation_manufacture_date_error:
+            errors.append(validation_manufacture_date_error)
+
+        validation_expiration_date_error = validate_expiration_date(self.expiration_date_text_field.value)
+        if validation_expiration_date_error:
+            errors.append(validation_expiration_date_error)
+
+        if errors:
+            self.show_errors_display(errors)
+            return
+
         manufacture_day, manufacture_month, manufacture_year = tuple(
             map(int, self.manufacture_date_text_field.value.split('.')))
 
@@ -166,6 +185,22 @@ class LogisticApp(UserControl):
         self.update()
 
     def edit_record(self, e: ControlEvent) -> None:
+        errors = []
+
+        match e.control.data[0]:
+            case 'manufacture_date':
+                validation_manufacture_date_error = validate_manufacture_date(e.control.value)
+                if validation_manufacture_date_error:
+                    errors.append(validation_manufacture_date_error)
+            case 'expiration_date':
+                validation_expiration_date_error = validate_expiration_date(e.control.value)
+                if validation_expiration_date_error:
+                    errors.append(validation_expiration_date_error)
+
+        if errors:
+            self.show_errors_display(errors)
+            return
+
         database.update(self.db, self.db_cursor, *e.control.data, e.control.value)
 
         self.fill_datatable(UserControl)
@@ -177,6 +212,18 @@ class LogisticApp(UserControl):
         e.control.content = TextField(bgcolor='#61677A', dense=True, on_submit=self.edit_record,
                                       data=e.control.data)
 
+        self.update()
+
+    def show_errors_display(self, errors: List[str]) -> None:
+        column_controls = [Text('Обнаружены ошибки!\n', size=20)]
+        column_controls.extend([Text(f'{number + 1}. {error}', size=16) for number, error in enumerate(errors)])
+
+        self.input_errors_dialog.content = Column(
+            controls=column_controls,
+            height=100,
+            width=300,
+        )
+        self.input_errors_dialog.open = True
         self.update()
 
     def did_mount(self) -> None:
