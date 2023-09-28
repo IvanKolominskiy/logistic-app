@@ -118,7 +118,7 @@ class LogisticApp(UserControl):
                                               DataCell(Text(expiry_date)),
                                               DataCell(
                                                   IconButton(icon=icons.DELETE,
-                                                             data=name,
+                                                             data=record_id,
                                                              on_click=self.delete_record)
                                               )])
                                for record_id, name, manufacture_date, expiration_date, expiry_date in equipment_records]

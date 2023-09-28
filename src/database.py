@@ -56,9 +56,9 @@ def upload(db_cursor: sqlite3.Cursor, category: int | str) -> List[Tuple[str, in
     return db_cursor.fetchall()
 
 
-def delete(db: sqlite3.Connection, db_cursor: sqlite3.Cursor, equipment_name: str) -> None:
+def delete(db: sqlite3.Connection, db_cursor: sqlite3.Cursor, record_id: str) -> None:
     db_cursor.execute(f'DELETE FROM equipment\n'
-                      f'WHERE name = "{equipment_name}"')
+                      f'WHERE id = "{record_id}"')
 
     db.commit()
 
