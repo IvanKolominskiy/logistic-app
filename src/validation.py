@@ -7,11 +7,15 @@ def validate_manufacture_date(user_manufacture_date: str) -> str | None:
             map(int, user_manufacture_date.split('.')))
 
         datetime(manufacture_year, manufacture_month, manufacture_day)
+
+        if manufacture_year < 1000:
+            raise ValueError
+
     except ValueError:
         return 'Некорректная дата производства'
 
 
-def validate_expiration_date(user_expiration_date: str) -> str | None:
+def validate_shelf_life(user_expiration_date: str) -> str | None:
     try:
         int(user_expiration_date)
     except ValueError:
