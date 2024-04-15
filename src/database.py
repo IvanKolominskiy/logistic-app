@@ -1,8 +1,14 @@
+import os.path
 import sqlite3
+import os
+
 from typing import List, Tuple
 
 
 def start() -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
+    if not os.path.isdir('..\\data'):
+        os.mkdir('..\\data')
+
     db = sqlite3.connect('../data/database.db', check_same_thread=False)
     db_cursor = db.cursor()
 
